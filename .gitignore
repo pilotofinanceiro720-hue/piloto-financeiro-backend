@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+
+# TypeScript build files
+*.js
+*.js.map
+*.d.ts
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.bak
+
+# IDEs and other system files
+.DS_Store
+Thumbs.db
+
+# Railway specific files
+.railway/
+
+# Test coverage
+coverage/
+
+# Build artifacts
+build/
+dist/
+
+# Compiled output
+/tmp
