@@ -1,200 +1,202 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { pgEnum, pgTable, text, timestamp, varchar, integer, boolean, serial } from "drizzle-orm/pg-core";
 
 /**
  * Core user table backing auth flow.
  * Extend this file with additional tables as your product grows.
  * Columns use camelCase to match both database fields and generated types.
  */
-export const users = mysqlTable("users", {
+export const users = pgTable("users", {
   /**
    * Surrogate primary key. Auto-incremented numeric value managed by the database.
    * Use this for relations between tables.
    */
-  id: int("id").autoincrement().primaryKey(),
+  id: serial("id").primaryKey(),
   /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: text("role").default("user").notNull(), // PostgreSQL doesn't have native enums like MySQL without extra setup, using text for simplicity or pgEnum
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
+
+export const roleEnum = pgEnum("role", ["user", "admin"]);
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 // ===== VEHICLES TABLE =====
-export const vehicles = mysqlTable("vehicles", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+export const vehicles = pgTable("vehicles", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
   brand: varchar("brand", { length: 100 }).notNull(),
   model: varchar("model", { length: 100 }).notNull(),
-  year: int("year").notNull(),
-  mileage: varchar("mileage", { length: 20 }).default("0").notNull(),
-  fuelConsumption: varchar("fuelConsumption", { length: 20 }).notNull(),
-  wearCoefficient: varchar("wearCoefficient", { length: 20 }).default("0.15").notNull(),
-  averageMaintenanceCost: varchar("averageMaintenanceCost", { length: 20 }).default("0").notNull(),
-  isActive: int("isActive").default(1).notNull(),
+  year: integer("year").notNull(),
+  mileage: text("mileage").default("0").notNull(),
+  fuelConsumption: text("fuelConsumption").notNull(),
+  wearCoefficient: text("wearCoefficient").default("0.15").notNull(),
+  averageMaintenanceCost: text("averageMaintenanceCost").default("0").notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== RIDES TABLE =====
-export const rides = mysqlTable("rides", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  vehicleId: int("vehicleId").notNull(),
+export const rides = pgTable("rides", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  vehicleId: integer("vehicleId").notNull(),
   origin: text("origin"),
   destination: text("destination"),
-  distance: varchar("distance", { length: 20 }).notNull(),
-  duration: int("duration").notNull(),
-  grossRevenue: varchar("grossRevenue", { length: 20 }).notNull(),
-  tips: varchar("tips", { length: 20 }).default("0").notNull(),
-  fuelCost: varchar("fuelCost", { length: 20 }).default("0").notNull(),
-  tollCost: varchar("tollCost", { length: 20 }).default("0").notNull(),
-  maintenanceCost: varchar("maintenanceCost", { length: 20 }).default("0").notNull(),
-  netProfit: varchar("netProfit", { length: 20 }).notNull(),
-  pricePerKm: varchar("pricePerKm", { length: 20 }),
-  pricePerMinute: varchar("pricePerMinute", { length: 20 }),
-  multiplier: varchar("multiplier", { length: 20 }).default("1").notNull(),
-  rideType: mysqlEnum("rideType", ["app", "particular"]).default("app").notNull(),
-  status: mysqlEnum("status", ["ongoing", "completed", "cancelled"]).default("ongoing").notNull(),
+  distance: text("distance").notNull(),
+  duration: integer("duration").notNull(),
+  grossRevenue: text("grossRevenue").notNull(),
+  tips: text("tips").default("0").notNull(),
+  fuelCost: text("fuelCost").default("0").notNull(),
+  tollCost: text("tollCost").default("0").notNull(),
+  maintenanceCost: text("maintenanceCost").default("0").notNull(),
+  netProfit: text("netProfit").notNull(),
+  pricePerKm: text("pricePerKm"),
+  pricePerMinute: text("pricePerMinute"),
+  multiplier: text("multiplier").default("1").notNull(),
+  rideType: text("rideType").default("app").notNull(),
+  status: text("status").default("ongoing").notNull(),
   startedAt: timestamp("startedAt").defaultNow().notNull(),
   completedAt: timestamp("completedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== DAILY SUMMARIES TABLE =====
-export const dailySummaries = mysqlTable("dailySummaries", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+export const dailySummaries = pgTable("dailySummaries", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
   date: timestamp("date").notNull(),
-  totalRevenue: varchar("totalRevenue", { length: 20 }).default("0").notNull(),
-  totalTips: varchar("totalTips", { length: 20 }).default("0").notNull(),
-  totalExpenses: varchar("totalExpenses", { length: 20 }).default("0").notNull(),
-  netProfit: varchar("netProfit", { length: 20 }).default("0").notNull(),
-  totalRides: int("totalRides").default(0).notNull(),
-  totalDistance: varchar("totalDistance", { length: 20 }).default("0").notNull(),
-  totalDuration: int("totalDuration").default(0).notNull(),
-  isClosed: int("isClosed").default(0).notNull(),
+  totalRevenue: text("totalRevenue").default("0").notNull(),
+  totalTips: text("totalTips").default("0").notNull(),
+  totalExpenses: text("totalExpenses").default("0").notNull(),
+  netProfit: text("netProfit").default("0").notNull(),
+  totalRides: integer("totalRides").default(0).notNull(),
+  totalDistance: text("totalDistance").default("0").notNull(),
+  totalDuration: integer("totalDuration").default(0).notNull(),
+  isClosed: boolean("isClosed").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== MONTHLY GOALS TABLE =====
-export const monthlyGoals = mysqlTable("monthlyGoals", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  month: int("month").notNull(),
-  year: int("year").notNull(),
-  targetNetProfit: varchar("targetNetProfit", { length: 20 }).notNull(),
-  monthlyExpenses: varchar("monthlyExpenses", { length: 20 }).default("0").notNull(),
-  daysWorked: int("daysWorked").default(0).notNull(),
-  currentProgress: varchar("currentProgress", { length: 20 }).default("0").notNull(),
-  dailyTarget: varchar("dailyTarget", { length: 20 }).notNull(),
+export const monthlyGoals = pgTable("monthlyGoals", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  targetNetProfit: text("targetNetProfit").notNull(),
+  monthlyExpenses: text("monthlyExpenses").default("0").notNull(),
+  daysWorked: integer("daysWorked").default(0).notNull(),
+  currentProgress: text("currentProgress").default("0").notNull(),
+  dailyTarget: text("dailyTarget").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== OFFERS TABLE (Marketplace) =====
-export const offers = mysqlTable("offers", {
-  id: int("id").autoincrement().primaryKey(),
+export const offers = pgTable("offers", {
+  id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  price: varchar("price", { length: 20 }).notNull(),
-  originalPrice: varchar("originalPrice", { length: 20 }),
+  price: text("price").notNull(),
+  originalPrice: text("originalPrice"),
   storeName: varchar("storeName", { length: 255 }).notNull(),
   storeUrl: text("storeUrl").notNull(),
   affiliateUrl: text("affiliateUrl").notNull(),
   imageUrl: text("imageUrl"),
   couponCode: varchar("couponCode", { length: 100 }),
   category: varchar("category", { length: 100 }),
-  trustScore: int("trustScore").default(0).notNull(),
-  isActive: int("isActive").default(1).notNull(),
-  isApproved: int("isApproved").default(0).notNull(),
-  source: mysqlEnum("source", ["manual", "ai"]).default("manual").notNull(),
+  trustScore: integer("trustScore").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  isApproved: boolean("isApproved").default(false).notNull(),
+  source: text("source").default("manual").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== WISHLISTS TABLE =====
-export const wishlists = mysqlTable("wishlists", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  offerId: int("offerId").notNull(),
-  alertOnPriceDrop: int("alertOnPriceDrop").default(1).notNull(),
-  alertOnCoupon: int("alertOnCoupon").default(1).notNull(),
+export const wishlists = pgTable("wishlists", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  offerId: integer("offerId").notNull(),
+  alertOnPriceDrop: boolean("alertOnPriceDrop").default(true).notNull(),
+  alertOnCoupon: boolean("alertOnCoupon").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ===== PRICE HISTORY TABLE =====
-export const priceHistory = mysqlTable("priceHistory", {
-  id: int("id").autoincrement().primaryKey(),
-  offerId: int("offerId").notNull(),
-  price: varchar("price", { length: 20 }).notNull(),
+export const priceHistory = pgTable("priceHistory", {
+  id: serial("id").primaryKey(),
+  offerId: integer("offerId").notNull(),
+  price: text("price").notNull(),
   recordedAt: timestamp("recordedAt").defaultNow().notNull(),
 });
 
 // ===== SUBSCRIPTIONS TABLE =====
-export const subscriptions = mysqlTable("subscriptions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  plan: mysqlEnum("plan", ["monthly", "semestral", "annual"]).notNull(),
-  status: mysqlEnum("status", ["active", "cancelled", "expired"]).default("active").notNull(),
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  plan: text("plan").notNull(),
+  status: text("status").default("active").notNull(),
   startDate: timestamp("startDate").defaultNow().notNull(),
   endDate: timestamp("endDate").notNull(),
-  autoRenew: int("autoRenew").default(1).notNull(),
+  autoRenew: boolean("autoRenew").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== AFFILIATE CONVERSIONS TABLE =====
-export const affiliateConversions = mysqlTable("affiliateConversions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  offerId: int("offerId").notNull(),
-  commission: varchar("commission", { length: 20 }).default("0").notNull(),
+export const affiliateConversions = pgTable("affiliateConversions", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
+  offerId: integer("offerId").notNull(),
+  commission: text("commission").default("0").notNull(),
   conversionDate: timestamp("conversionDate").defaultNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ===== DEMAND AREAS TABLE =====
-export const demandAreas = mysqlTable("demandAreas", {
-  id: int("id").autoincrement().primaryKey(),
+export const demandAreas = pgTable("demandAreas", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  latitude: varchar("latitude", { length: 20 }).notNull(),
-  longitude: varchar("longitude", { length: 20 }).notNull(),
-  demandLevel: mysqlEnum("demandLevel", ["low", "medium", "high"]).default("medium").notNull(),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
+  demandLevel: text("demandLevel").default("medium").notNull(),
   eventType: varchar("eventType", { length: 100 }),
   description: text("description"),
-  isActive: int("isActive").default(1).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
   startTime: timestamp("startTime"),
   endTime: timestamp("endTime"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== FUEL STATIONS TABLE =====
-export const fuelStations = mysqlTable("fuelStations", {
-  id: int("id").autoincrement().primaryKey(),
+export const fuelStations = pgTable("fuelStations", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  latitude: varchar("latitude", { length: 20 }).notNull(),
-  longitude: varchar("longitude", { length: 20 }).notNull(),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
   address: text("address"),
-  fuelPrice: varchar("fuelPrice", { length: 20 }),
-  hasElectricCharging: int("hasElectricCharging").default(0).notNull(),
-  isActive: int("isActive").default(1).notNull(),
+  fuelPrice: text("fuelPrice"),
+  hasElectricCharging: boolean("hasElectricCharging").default(false).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 // ===== REFRESH TOKENS TABLE =====
-export const refreshTokens = mysqlTable("refreshTokens", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+export const refreshTokens = pgTable("refreshTokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId").notNull(),
   tokenHash: varchar("tokenHash", { length: 255 }).notNull().unique(),
   expiresAt: timestamp("expiresAt").notNull(),
   revokedAt: timestamp("revokedAt"),
@@ -202,22 +204,22 @@ export const refreshTokens = mysqlTable("refreshTokens", {
 });
 
 // ===== ADMIN LOGS TABLE =====
-export const adminLogs = mysqlTable("adminLogs", {
-  id: int("id").autoincrement().primaryKey(),
-  adminId: int("adminId").notNull(),
+export const adminLogs = pgTable("adminLogs", {
+  id: serial("id").primaryKey(),
+  adminId: integer("adminId").notNull(),
   action: varchar("action", { length: 255 }).notNull(),
   targetType: varchar("targetType", { length: 100 }),
-  targetId: int("targetId"),
+  targetId: integer("targetId"),
   details: text("details"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ===== CSRF STATES TABLE =====
-export const csrfStates = mysqlTable("csrfStates", {
-  id: int("id").autoincrement().primaryKey(),
+export const csrfStates = pgTable("csrfStates", {
+  id: serial("id").primaryKey(),
   state: varchar("state", { length: 255 }).notNull().unique(),
   expiresAt: timestamp("expiresAt").notNull(),
-  used: int("used").default(0).notNull(),
+  used: boolean("used").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
