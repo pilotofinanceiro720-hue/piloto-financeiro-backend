@@ -63,7 +63,7 @@ export async function upsertUser(user: schema.InsertUser): Promise<void> {
 
     await db.insert(schema.users).values(values).onConflictDoUpdate({
       target: schema.users.openId,
-      set: updateSet,
+      set: updateSet as any,
     });
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
@@ -104,7 +104,7 @@ export async function getActiveVehicle(userId: number) {
 export async function createVehicle(data: schema.InsertVehicle) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(schema.vehicles).values(data).returning({ id: schema.vehicles.id });
+  const result = await db.insert(schema.vehicles).values(data as any).returning({ id: schema.vehicles.id });
   return result[0]?.id || 0;
 }
 
@@ -158,7 +158,7 @@ export async function getTodayRides(userId: number) {
 export async function createRide(data: schema.InsertRide) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(schema.rides).values(data).returning({ id: schema.rides.id });
+  const result = await db.insert(schema.rides).values(data as any).returning({ id: schema.rides.id });
   return result[0]?.id || 0;
 }
 

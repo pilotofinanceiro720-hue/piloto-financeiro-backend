@@ -30,4 +30,7 @@ export const ENV = {
 
   // Links rastreáveis
   shortLinkBase: process.env.SHORT_LINK_BASE ?? "https://go.pilotofinanceiro.com.br",
+  forgeApiUrl: process.env.FORGE_API_URL ?? "",
+  forgeApiKey: process.env.FORGE_API_KEY ?? "",
+  ownerOpenId: process.env.OWNER_OPENID ?? "",
 };
