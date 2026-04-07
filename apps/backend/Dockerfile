@@ -1,20 +1,12 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm
-
-# Copia arquivos do monorepo da raiz
 COPY pnpm-workspace.yaml ./
 COPY pnpm-lock.yaml ./
 COPY package.json ./
 COPY apps/backend/package.json ./apps/backend/
-
-# Instala dependências
 RUN pnpm install --frozen-lockfile
-
-# Copia código do backend
 COPY apps/backend/ ./apps/backend/
-
-# Build
 WORKDIR /app/apps/backend
 RUN pnpm build
 
