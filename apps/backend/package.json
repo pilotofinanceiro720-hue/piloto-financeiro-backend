@@ -19,7 +19,9 @@
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.45.2",
     "express": "^4.22.1",
+    "google-auth-library": "^10.6.2",
     "jose": "6.1.0",
+    "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.8",
     "superjson": "^1.13.3",
     "zod": "^4.2.1"
