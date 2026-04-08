@@ -24,6 +24,11 @@ export const ENV = {
   // Gemini IA
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
 
+  // Manus OAuth
+  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
+  appId: process.env.MANUS_APP_ID ?? "",
+  cookieSecret: process.env.COOKIE_SECRET ?? "",
+
   // App
   apiBaseUrl: process.env.API_BASE_URL ?? "https://api.pilotofinanceiro.com.br",
   adminEmail: process.env.ADMIN_EMAIL ?? "frederico.soares@pilotofinanceiro.com.br",
