@@ -45,7 +45,7 @@ class OAuthService {
 
   async getTokenByCode(code: string, state: string): Promise<ExchangeTokenResponse> {
     const payload: ExchangeTokenRequest = {
-      clientId: ENV.appId,
+      clientId: "",
       grantType: "authorization_code",
       code,
       redirectUri: this.decodeState(state),
@@ -152,7 +152,7 @@ class SDKServer {
     return this.signSession(
       {
         openId,
-        appId: ENV.appId,
+        appId: "",
         name: options.name || "",
       },
       options,
@@ -212,7 +212,7 @@ class SDKServer {
   async getUserInfoWithJwt(jwtToken: string): Promise<GetUserInfoWithJwtResponse> {
     const payload: GetUserInfoWithJwtRequest = {
       jwtToken,
-      projectId: ENV.appId,
+      projectId: "",
     };
 
     const { data } = await this.client.post<GetUserInfoWithJwtResponse>(
