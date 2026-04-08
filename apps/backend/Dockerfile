@@ -1,17 +1,18 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY apps/backend/package.json ./apps/backend/
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY apps/backend/ ./apps/backend/
-RUN pnpm --filter=backend build
-RUN pnpm deploy --filter=backend --prod /prod/backend
+COPY . .
+RUN pnpm build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
-COPY --from=builder /prod/backend/node_modules ./node_modules
-COPY --from=builder /prod/backend/package.json ./
-COPY --from=builder /app/apps/backend/dist ./dist
+RUN npm install -g pnpm
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
