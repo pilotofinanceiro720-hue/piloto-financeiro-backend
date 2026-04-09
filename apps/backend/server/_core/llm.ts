@@ -107,61 +107,29 @@ export type ResponseFormat =
   | { type: "json_object" }
   | { type: "json_schema"; json_schema: JsonSchema };
 
-const ensureArray = (value: MessageContent | MessageContent[]): MessageContent[] =>
-  Array.isArray(value) ? value : [value];
-
-const normalizeContentPart = (part: MessageContent): TextContent | ImageContent | FileContent => {
-  if (typeof part === "string") {
-    return { type: "text", text: part };
+export async function invokeLLM(_params: InvokeParams): Promise<InvokeResult> {
+  if (!ENV.geminiApiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 
-  if (part.type === "text") {
-    return part;
-  }
-
-  if (part.type === "image_url") {
-    return part;
-  }
-
-  if (part.type === "file_url") {
-    return part;
-  }
-
-  throw new Error("Unsupported message content part");
-};
-
-const normalizeMessage = (message: Message) => {
-  const { role, name, tool_call_id } = message;
-
-  if (role === "tool" || role === "function") {
-    const content = ensureArray(message.content)
-      .map((part) => (typeof part === "string" ? part : JSON.stringify(part)))
-      .join("\n");
-
-    return {
-      role,
-      name,
-      tool_call_id,
-      content,
-    };
-  }
-
-  const contentParts = ensureArray(message.content).map(normalizeContentPart);
-
-  // If there's only text content, collapse to a single string for compatibility
-  if (contentParts.length === 1 && contentParts[0].type === "text") {
-    return {
-      role,
-      name,
-      content: contentParts[0].text,
-    };
-  }
-
+  console.warn("[LLM] invokeLLM stub called. Implement your LLM provider here.");
+  
   return {
-    role,
-    name,
-    content: contentParts,
+    id: "stub",
+    created: Date.now(),
+    model: "stub",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "LLM provider not implemented.",
+        },
+        finish_reason: "stop",
+      },
+    ],
   };
+<<<<<<< HEAD
 };
 
 const normalizeToolChoice = (
@@ -306,4 +274,6 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   }
 
   return (await response.json()) as InvokeResult;
+=======
+>>>>>>> c4cfd05 (refactor: remover dependencias Manus)
 }

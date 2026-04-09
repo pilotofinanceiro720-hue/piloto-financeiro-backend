@@ -24,9 +24,9 @@ export const ENV = {
   // Gemini IA
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
 
-  // Manus OAuth
+  // OAuth
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
-  appId: process.env.MANUS_APP_ID ?? "",
+  appId: process.env.APP_ID ?? "pilotofinanceiro",
   cookieSecret: process.env.COOKIE_SECRET ?? "",
 
   // App
