@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "rea
 import { useEarnings } from "@/hooks/use-earnings";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { ScreenContainer } from "@/components/screen-container";
+import OverlayAnalisador from '../../components/OverlayAnalisador'
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -102,6 +103,7 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      <OverlayAnalisador />
     </ScreenContainer>
   );
 }

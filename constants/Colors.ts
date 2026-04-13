@@ -1,0 +1,17 @@
+export const Colors = {
+  background: '#111111',
+  surface: '#1e1e1e',
+  border: '#2a2a2a',
+  header: '#161616',
+  green: '#2ECC40',
+  blue: '#1565C0',
+  heroCard: '#1A3C6E',
+  heroBorder: '#2980D9',
+  gold: '#f9a825',
+  danger: '#e74c3c',
+  textPrimary: '#ffffff',
+  textSecondary: '#dddddd',
+  textLabel: '#aaaaaa',
+  textMuted: '#777777',
+  divider: '#2a2a2a',
+}

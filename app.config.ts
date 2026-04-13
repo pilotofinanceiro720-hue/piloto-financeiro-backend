@@ -44,6 +44,7 @@ const config: ExpoConfig = {
     eas: {
       projectId: "4823774f-7450-4346-b2b3-fb05373e4194",
     },
+    oauthCallback: "https://api.pilotofinanceiro.com.br/api/oauth/callback",
   },
   orientation: "portrait",
   icon: "./assets/images/icon.png",
