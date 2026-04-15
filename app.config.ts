@@ -29,7 +29,7 @@ const schemeFromBundleId = "pilotofinanceiro"
 const env = {
   // App branding - update these values directly (do not use env vars)
   appName: "Piloto Financeiro",
-  appSlug: "piloto-financeiro",
+  appSlug: "driver-finance-app",
   logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663359797475/cziCPYduHnuhn3EBeBUg5J/icon-HzaeTxcqJ6mZEMDWzs5nos.webp",
   scheme: "pilotofinanceiro",
   iosBundleId: "com.pilotofinanceiro.app",

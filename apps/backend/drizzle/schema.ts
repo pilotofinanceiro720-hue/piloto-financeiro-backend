@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, timestamp, varchar, integer, boolean, serial } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, varchar, integer, boolean, serial, doublePrecision, jsonb } from "drizzle-orm/pg-core";
 
 /**
  * Core user table backing auth flow.
@@ -221,6 +221,58 @@ export const csrfStates = pgTable("csrfStates", {
   expiresAt: timestamp("expiresAt").notNull(),
   used: boolean("used").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ===== PILOTO FINANCEIRO SPECIFIC TABLES =====
+
+export const corridas_piloto = pgTable("corridas_piloto", {
+  id: serial("id").primaryKey(),
+  usuario_id: varchar("usuario_id", { length: 64 }).notNull(),
+  valor: doublePrecision("valor").notNull(),
+  distancia: doublePrecision("distancia").notNull(),
+  tempo: integer("tempo").notNull(),
+  plataforma: varchar("plataforma", { length: 50 }).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const metricas_agregadas = pgTable("metricas_agregadas", {
+  id: serial("id").primaryKey(),
+  usuario_id: varchar("usuario_id", { length: 64 }).notNull().unique(),
+  ganho_total: doublePrecision("ganho_total").default(0).notNull(),
+  km_total: doublePrecision("km_total").default(0).notNull(),
+  horas_total: doublePrecision("horas_total").default(0).notNull(),
+  media_rspkm: doublePrecision("media_rspkm").default(0).notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const despesas = pgTable("despesas", {
+  id: serial("id").primaryKey(),
+  usuario_id: varchar("usuario_id", { length: 64 }).notNull(),
+  tipo: varchar("tipo", { length: 50 }).notNull(), // combustivel, manutencao, etc
+  valor: doublePrecision("valor").notNull(),
+  data: timestamp("data").defaultNow().notNull(),
+  descricao: text("descricao"),
+});
+
+export const jornadas_turno = pgTable("jornadas_turno", {
+  id: serial("id").primaryKey(),
+  usuario_id: varchar("usuario_id", { length: 64 }).notNull(),
+  iniciado_em: timestamp("iniciado_em").defaultNow().notNull(),
+  encerrado_em: timestamp("encerrado_em"),
+  ganho_bruto: doublePrecision("ganho_bruto").default(0),
+  corridas_aceitas: integer("corridas_aceitas").default(0),
+  km_rodados: doublePrecision("km_rodados").default(0),
+  plataforma: varchar("plataforma", { length: 50 }),
+});
+
+export const overlay_criterios = pgTable("overlay_criterios", {
+  id: serial("id").primaryKey(),
+  usuario_id: varchar("usuario_id", { length: 64 }).notNull().unique(),
+  rspkm_minimo: doublePrecision("rspkm_minimo").default(1.30),
+  rsphora_minimo: doublePrecision("rsphora_minimo").default(50),
+  valor_minimo: doublePrecision("valor_minimo").default(10),
+  km_maximo_busca: doublePrecision("km_maximo_busca").default(2.0),
+  plataformas_ativas: jsonb("plataformas_ativas").default(['uber', '99']),
 });
 
 // ===== TYPES EXPORT =====
