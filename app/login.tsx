@@ -27,8 +27,8 @@ export default function LoginScreen() {
       setIsAuthLoading(true);
       console.log("[Login] Starting Google OAuth...");
 
-      // Get API base URL (dev: 3000-sandboxid.region.domain, prod: https://api.manus.im)
-      const apiUrl = getApiBaseUrl() || "https://api.manus.im";
+      // Get API base URL (dev: 3000-sandboxid.region.domain, prod: https://api.pilotofinanceiro.com.br)
+      const apiUrl = getApiBaseUrl() || "https://api.pilotofinanceiro.com.br";
       
       // Determine if running on mobile or web
       const isMobile = Platform.OS !== "web";

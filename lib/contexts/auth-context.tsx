@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleLogout = async () => {
     try {
       console.log("[Auth] Logging out...");
-      await fetch("https://api.manus.im/api/auth/logout", {
+      await fetch("https://api.pilotofinanceiro.com.br/api/auth/logout", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

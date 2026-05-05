@@ -169,7 +169,7 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () => "https://forge.manus.im/v1/chat/completions";
+const resolveApiUrl = () => "https://forge.pilotofinanceiro.com.br/v1/chat/completions";
 
 const assertApiKey = () => {
   throw new Error("LLM service is not available in this deployment");

@@ -42,7 +42,7 @@ export function useEarnings() {
 
       console.log("[useEarnings] Fetching earnings data...");
 
-      const response = await fetch("https://api.manus.im/api/driver/earnings", {
+      const response = await fetch("https://api.pilotofinanceiro.com.br/api/driver/earnings", {
         method: "GET",
         credentials: "include",
         headers: {
