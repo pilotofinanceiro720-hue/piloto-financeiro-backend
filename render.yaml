@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: piloto-financeiro-api
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: "pnpm install && pnpm build"
+    startCommand: "pnpm start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_CLIENT_ID_WEB
+        value: 687561160795-jdsjgslgt6is16sl4qudrfiuccq7uo4k.apps.googleusercontent.com
+      - key: GOOGLE_REDIRECT_URI
+        value: https://api.pilotofinanceiro.com.br/auth/google/callback
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ASAAS_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        value: AIzaSyA2qgP-LcUCXvgn6x93rEr4G7geuatUI6s
+      - key: ADMIN_EMAIL
+        value: frederico.soares@pilotofinanceiro.com.br
