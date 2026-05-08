@@ -107,4 +107,64 @@ export function registerOAuthRoutes(app: Express) {
       res.status(401).json({ error: "Token inválido ou expirado" });
     }
   });
+
+  // 4. Rota para troca de tokens mobile
+  app.get("/api/oauth/mobile", async (req: Request, res: Response) => {
+    try {
+      const { code, state } = req.query;
+      if (!code || typeof code !== "string") {
+        return res.status(400).json({ error: "Missing authorization code" });
+      }
+      
+      // Trocar o código por tokens do Google
+      const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID_WEB;
+      const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+      const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || "pilotofinanceiro://oauth/callback";
+      
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code,
+          client_id: GOOGLE_CLIENT_ID || "",
+          client_secret: GOOGLE_CLIENT_SECRET || "",
+          redirect_uri: REDIRECT_URI,
+          grant_type: "authorization_code",
+        }),
+      });
+      
+      const tokens = await tokenResponse.json();
+      
+      if (tokens.error) {
+        return res.status(400).json({ error: tokens.error_description || "Token exchange failed" });
+      }
+      
+      // Buscar dados do usuário no Google
+      const userResponse = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+      });
+      const userData = await userResponse.json();
+      
+      // Gerar JWT para o app
+      const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+      const token = jwt.sign(
+        { sub: userData.id, email: userData.email, name: userData.name },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+      
+      res.json({
+        token,
+        user: {
+          id: userData.id,
+          email: userData.email,
+          name: userData.name,
+          picture: userData.picture,
+        },
+      });
+    } catch (error) {
+      console.error("OAuth mobile error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 }
